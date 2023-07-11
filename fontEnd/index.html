@@ -102,36 +102,36 @@
                         $("#main").empty();
                         $("#main").append(
                             `
-                <div class="dataTableForViewStatus">
-                  <div class="dataTableForVS_In">
-                    <div class="row">
-                      <div class="col-md-1 col-sm-1"><span> Sl </span></div>
-                      <div class="col-md-2 col-sm-2">
-                        <span>Company Name</span>
-                      </div>
-                      <div class="col-md-2 col-sm-2 nj">
-                        <span>Job Title </span>
-                      </div>
-                      <div class="col-md-1 col-sm-2 np">
-                        <span>Posted Date </span>
-                      </div>
-                      <div class="col-md-1 col-sm-2 txtRightCont">
-                        <span> Closing Date </span>
-                      </div>
-                      <div class="col-md-1 col-sm-1 txtRightCont">
-                        <span> Daily Budget </span>
-                      </div>
-                      <div class="col-md-1 col-sm-1 txtRightCont">
-                        <span> Alert for closing </span>
-                      </div>
-                      <div class="col-md-1 col-sm-1 txtRightCont">
-                        <span> Status </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="mainWrapForBorder" id="body"></div>
-                `
+                                <div class="dataTableForViewStatus">
+                                <div class="dataTableForVS_In">
+                                    <div class="row">
+                                    <div class="col-md-1 col-sm-1"><span> Sl </span></div>
+                                    <div class="col-md-2 col-sm-2">
+                                        <span>Company Name</span>
+                                    </div>
+                                    <div class="col-md-2 col-sm-2 nj">
+                                        <span>Job Title </span>
+                                    </div>
+                                    <div class="col-md-1 col-sm-2 np">
+                                        <span>Posted Date </span>
+                                    </div>
+                                    <div class="col-md-1 col-sm-2 txtRightCont">
+                                        <span> Closing Date </span>
+                                    </div>
+                                    <div class="col-md-1 col-sm-1 txtRightCont">
+                                        <span> Daily Budget </span>
+                                    </div>
+                                    <div class="col-md-1 col-sm-1 txtRightCont">
+                                        <span> Alert for closing </span>
+                                    </div>
+                                    <div class="col-md-1 col-sm-1 txtRightCont">
+                                        <span> Status </span>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="mainWrapForBorder" id="body"></div>
+                                `
                         )
                         var html = ``;
                         data.forEach((element, index) => {
@@ -143,17 +143,20 @@
                                 let month = date.getMonth() + 1;
                                 let year = date.getFullYear();
 
-                                // This arrangement can be altered based on how we want the date's format to appear.
-                                let currentDate = `${month}/${day}/${year}`;
-                                console.log(currentDate); // "17-6-2022"
-                                return currentDate;
+                                // Add leading zeros if necessary
+                                let formattedDay = day < 10 ? `0${day}` : day;
+                                let formattedMonth = month < 10 ? `0${month}` : month;
 
+                                // This arrangement can be altered based on how we want the date's format to appear.
+                                let currentDate = `${year}-${formattedMonth}-${formattedDay}`;
+                                console.log(currentDate);
+                                return currentDate;
                             }
                             html +=
                                 `
                   <div class="dataTableForViewStatusIn">
                     <div class="row">
-                      <div class="col-md-1 col-sm-1"> ${element.SL}</div>
+                      <div class="col-md-1 col-sm-1"></div>
                       <div class="col-md-2 col-sm-2">
                         ${element.CompanyName}
                       </div>
@@ -174,8 +177,8 @@
                       </div>
               
                       <div class="col-md-1 col-sm-2 txtRightCont">
-                        ${element.action === 1 ? '<button class="openModal" onclick="openModalView(' + index + ', \'' + element.posted_date + '\', \'' + element.closing_date + '\', \'' + element.daily_budget + '\')">Post</button>' : ''}
-                        ${element.action === 2 ? '<span>Live</span><button>Close</button class="openModal" onclick="openModalView(' + index + ', \'' + element.posted_date + '\', \'' + element.closing_date + '\', \'' + element.daily_budget + '\')"><button>Edit</button>' : ''}
+                        ${element.action === 1 ? '<button class="openModal" onclick="openModalView(' + element.Id + ', \'' + element.posted_date + '\', \'' + element.closing_date + '\', \'' + element.daily_budget + '\')">Post</button>' : ''}
+                        ${element.action === 2 ? '<span>Live</span><button>Close</button><button class="openModal" onclick="openModalView(' + element.Id + ', \'' + element.posted_date + '\', \'' + element.closing_date + '\', \'' + element.daily_budget + '\')">Edit</button>' : ''}
                         ${element.action === 3 ? '<span class="text-danger">Closed</span><button>Repost</button>' : ''}
                       </div>
                       
@@ -199,7 +202,7 @@
         }
 
         function openModalView(id, posted_date, closing_date, daily_budget) {
-            
+
             document.getElementById("id").value = id;
             document.getElementById('postedDate').valueAsDate = new Date(posted_date);
             document.getElementById('closingDate').valueAsDate = new Date(closing_date);
@@ -209,21 +212,21 @@
 
 
         function postModal() {
-
             const id = document.getElementById("id").value;
             const postedDate = document.getElementById("postedDate").value;
             const closingDate = document.getElementById("closingDate").value;
             const dailyBudget = document.getElementById("dailyBudget").value;
             console.log("value in postModal =>", id, postedDate, closingDate, dailyBudget);
+
             $.ajax({
-                url: 'http://localhost:3000/items/:'+id+'',
+                url: 'http://localhost:3000/items/' + id,
                 type: 'PUT',
                 contentType: 'application/json',
                 data: JSON.stringify({
-                    posted_date : postedDate,
-                    closing_date : closingDate,
-                    daily_budget : dailyBudget,
-                    action : 2
+                    posted_date: postedDate,
+                    closing_date: closingDate,
+                    daily_budget: dailyBudget,
+                    action: 2
                 }),
                 success: function (response) {
                     console.log('Item updated successfully:', response);
@@ -232,7 +235,7 @@
                     console.error('Failed to update item:', error);
                 }
             });
-
+            
         }
 
         $(document).on("click", ".openModal", function () {

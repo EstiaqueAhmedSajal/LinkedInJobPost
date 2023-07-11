@@ -49,7 +49,6 @@ app.post('/items', (req, res) => {
 
 // Update an item
 app.put('/items/:id', (req, res) => {
-    
     fs.readFile(dataPath, 'utf8', (err, data) => {
         if (err) {
             console.error('Failed to update item', err);
@@ -57,20 +56,20 @@ app.put('/items/:id', (req, res) => {
             return;
         }
         const items = JSON.parse(data);
-    });
         const itemId = req.params.id;
         const updatedItem = req.body;
 
-        // Find the item with the matching ID
-      const itemToUpdate = items.find(item => item.SL === Number(itemId));
-      if (!itemToUpdate) {
-        return res.status(404).json({ error: 'Item not found' });
-      }
-        // Update the properties of the item
-      itemToUpdate.posted_date = updatedItem.posted_date;
-      itemToUpdate.closing_date = updatedItem.closing_date;
-      itemToUpdate.daily_budget = updatedItem.daily_budget;
-      itemToUpdate.action = updatedItem.action;
+        // Find the index of the item with the specified ID
+        const itemIndex = items.findIndex(item => item.Id === parseInt(itemId));
+
+        if (itemIndex === -1) {
+            // Item with the specified ID not found
+            res.status(404).json({ error: 'Item not found' });
+            return;
+        }
+
+        // Update the item with the new data
+        items[itemIndex] = { ...items[itemIndex], ...updatedItem };
 
         fs.writeFile(dataPath, JSON.stringify(items), (err) => {
             if (err) {
@@ -80,7 +79,7 @@ app.put('/items/:id', (req, res) => {
             }
             res.json(updatedItem);
         });
-
+    });
 });
 
 // Delete an item
