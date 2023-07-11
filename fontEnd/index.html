@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bootstrap Table Example</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <style>
+        .dataTableForViewStatus {
+            padding: 0px;
+        }
+
+        .dataTableForViewStatus .dataTableForVS_In {
+            margin: 0 0 15px 0;
+            padding: 9px 15px 8px 15px;
+            background-color: #d9d9d9 !important;
+            border-radius: 6px;
+        }
+
+        .dataTableForViewStatus .dataTableForVS_In .nj {
+            text-align: center;
+        }
+
+        .dataTableForViewStatus .dataTableForVS_In span {
+            color: #333333;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .mainWrapForBorder .dataTableForViewStatusIn {
+            border: none;
+            border-bottom: 1px solid #efefef;
+            margin: 15px;
+            padding: 15px 0px 17.5px 0px;
+        }
+
+        .mainWrapForBorder .dataTableForViewStatusIn .txtLeftCont {
+            text-align: left;
+        }
+
+        .mainWrapForBorder .dataTableForViewStatusIn .txtCenterCont {
+            text-align: center;
+        }
+
+        .dataTableForViewStatus .txtRightCont,
+        .mainWrapForBorder .dataTableForViewStatusIn .txtRightCont {
+            text-align: right;
+        }
+
+        .mainWrapForBorder .dataTableForViewStatusIn:last-child {
+            border-bottom: 0px;
+        }
+
+        .mainWrapForBorder .typeOfResume a {
+            color: #616161;
+        }
+
+        @media only screen and (max-width: 767px) {
+            .mainWrapForBorder .dataTableForViewStatusIn .txtCenterCont {
+                text-align: left;
+            }
+
+            .mainWrapForBorder .dataTableForViewStatusIn .txtRightCont {
+                text-align: left;
+            }
+        }
+
+        @media only screen and (max-width: 991px) {
+            .dataTableForViewStatus .dataTableForVS_In {
+                display: none;
+            }
+        }
+
+        @media only screen and (min-width: 992px) and (max-width: 1200px) {
+            .dataTableForViewStatus .dataTableForVS_In {
+                display: none;
+            }
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            getData();
+        });
+        function getData() {
+            $.ajax({
+                url: 'http://localhost:3000/items',
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    if (!data) {
+                        $("#main").empty();
+                        $("#main").append(
+                            `
+            Not Found
+            `);
+                    } else {
+                        $("#main").empty();
+                        $("#main").append(
+                            `
+                <div class="dataTableForViewStatus">
+                  <div class="dataTableForVS_In">
+                    <div class="row">
+                      <div class="col-md-1 col-sm-1"><span> Sl </span></div>
+                      <div class="col-md-2 col-sm-2">
+                        <span>Company Name</span>
+                      </div>
+                      <div class="col-md-2 col-sm-2 nj">
+                        <span>Job Title </span>
+                      </div>
+                      <div class="col-md-1 col-sm-2 np">
+                        <span>Posted Date </span>
+                      </div>
+                      <div class="col-md-1 col-sm-2 txtRightCont">
+                        <span> Closing Date </span>
+                      </div>
+                      <div class="col-md-1 col-sm-1 txtRightCont">
+                        <span> Daily Budget </span>
+                      </div>
+                      <div class="col-md-1 col-sm-1 txtRightCont">
+                        <span> Alert for closing </span>
+                      </div>
+                      <div class="col-md-1 col-sm-1 txtRightCont">
+                        <span> Status </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mainWrapForBorder" id="body"></div>
+                `
+                        )
+                        var html = ``;
+                        data.forEach((element, index) => {
+                            // console.log("index",index);
+                            function getCurrentDay() {
+                                const date = new Date();
+
+                                let day = date.getDate();
+                                let month = date.getMonth() + 1;
+                                let year = date.getFullYear();
+
+                                // This arrangement can be altered based on how we want the date's format to appear.
+                                let currentDate = `${month}/${day}/${year}`;
+                                console.log(currentDate); // "17-6-2022"
+                                return currentDate;
+
+                            }
+                            html +=
+                                `
+                  <div class="dataTableForViewStatusIn">
+                    <div class="row">
+                      <div class="col-md-1 col-sm-1"> ${element.SL}</div>
+                      <div class="col-md-2 col-sm-2">
+                        ${element.CompanyName}
+                      </div>
+                      <div class="col-md-2 col-sm-2 nj">
+                        ${element.JobTitle}
+                      </div>
+                      <div class="col-md-1 col-sm-2 np">
+                        ${element.posted_date}
+                      </div>
+                      <div class="col-md-1 col-sm-2 txtRightCont">
+                        ${element.closing_date}
+                      </div>
+                      <div class="col-md-1 col-sm-1 txtRightCont">
+                        ${element.daily_budget}
+                      </div>
+                      <div class="col-md-1 col-sm-1 txtRightCont">
+                        ${element.closing_date === getCurrentDay() ? '<span class="text-danger">Close day</span>' : ''}
+                      </div>
+              
+                      <div class="col-md-1 col-sm-2 txtRightCont">
+                        ${element.action === 1 ? '<button class="openModal" onclick="openModalView(' + index + ', \'' + element.posted_date + '\', \'' + element.closing_date + '\', \'' + element.daily_budget + '\')">Post</button>' : ''}
+                        ${element.action === 2 ? '<span>Live</span><button>Close</button class="openModal" onclick="openModalView(' + index + ', \'' + element.posted_date + '\', \'' + element.closing_date + '\', \'' + element.daily_budget + '\')"><button>Edit</button>' : ''}
+                        ${element.action === 3 ? '<span class="text-danger">Closed</span><button>Repost</button>' : ''}
+                      </div>
+                      
+                    </div>
+                  </div>
+                `
+                        });
+                        $(document).ready(function () {
+                            $("#body").append(html);
+                        });
+
+
+
+                    }
+
+                },
+                error: function () {
+                    console.error('Error loading JSON file');
+                }
+            });
+        }
+
+        function openModalView(id, posted_date, closing_date, daily_budget) {
+            
+            document.getElementById("id").value = id;
+            document.getElementById('postedDate').valueAsDate = new Date(posted_date);
+            document.getElementById('closingDate').valueAsDate = new Date(closing_date);
+            document.getElementById('dailyBudget').value = daily_budget;
+            $("#editModal").modal("show");
+        }
+
+
+        function postModal() {
+
+            const id = document.getElementById("id").value;
+            const postedDate = document.getElementById("postedDate").value;
+            const closingDate = document.getElementById("closingDate").value;
+            const dailyBudget = document.getElementById("dailyBudget").value;
+            console.log("value in postModal =>", id, postedDate, closingDate, dailyBudget);
+            $.ajax({
+                url: 'http://localhost:3000/items/:'+id+'',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    posted_date : postedDate,
+                    closing_date : closingDate,
+                    daily_budget : dailyBudget,
+                    action : 2
+                }),
+                success: function (response) {
+                    console.log('Item updated successfully:', response);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to update item:', error);
+                }
+            });
+
+        }
+
+        $(document).on("click", ".openModal", function () {
+            $("#myModal").css("display", "block");
+        });
+
+        $(document).on("click", ".close, .modal", function () {
+            $("#myModal").css("display", "none");
+        });
+
+        $(document).on("click", ".modal-content", function (e) {
+            e.stopPropagation();
+        });
+
+
+    </script>
+    <div id="main" style="max-width: 80%; margin:0 auto;"></div>
+
+
+
+
+
+
+    <!-- Modal for Editing -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Employee Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="postedDate" class="form-label">Posted Date:</label>
+                        <input type="date" id="postedDate" name="postedDate" class="form-control"
+                            placeholder="Enter posted date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="closingDate" class="form-label">Closing Date:</label>
+                        <input type="date" id="closingDate" name="closingDate" class="form-control"
+                            placeholder="Enter closing date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="dailyBudget" class="form-label">Daily Budget:</label>
+                        <input type="text" id="dailyBudget" name="dailyBudget" class="form-control"
+                            placeholder="Enter daily budget">
+                    </div>
+                    <input type="text" id="id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="postModal()">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>
